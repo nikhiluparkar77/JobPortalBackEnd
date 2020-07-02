@@ -23,7 +23,7 @@ router.post(
     profile.State = req.body.State;
     profile.Nationality = req.body.Nationality;
 
-    Info.findOne({ id: req.body.userId })
+    Info.findOne({ userId: req.user.id })
       .then((proId) => {
         if (proId) {
           return res.status(400).json({ message: "Profile Already avilable" });
@@ -42,7 +42,7 @@ router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
   (req, res, next) => {
-    Info.find()
+    Info.findOne({ userId: req.user.id })
       .select(
         "_id userId FirstName LastName EmailId Phone DateOfBirth CurrentCity PermanentAddress State Nationality professional educational savejob applyjob"
       )
