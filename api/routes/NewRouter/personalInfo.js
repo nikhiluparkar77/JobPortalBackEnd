@@ -141,29 +141,44 @@ router.patch("/:infoId", (req, res, next) => {
 });
 
 // Delete persional info
+// router.delete(
+//   "/",
+//   passport.authenticate("jwt", { session: false }),
+//   (req, res, next) => {
+//     Info.findOneAndRemove({ userId: req.user.id })
+//       .exec()
+//       .then(() => {
+//         res.status(200).json({
+//           message: "Information Delete Successfully",
+//           request: {
+//             request: {
+//               type: "GET",
+//               url: "http://localhost:5000/personal/",
+//             },
+//           },
+//         });
+//       })
+//       .catch((err) => {
+//         res.status(500).json({
+//           Error: err,
+//         });
+//       });
+//   }
+// );
+
 router.delete(
-  "/:infoId",
+  "/",
   passport.authenticate("jwt", { session: false }),
   (req, res, next) => {
-    const id = req.params.infoId;
-    Info.remove({ _id: id })
-      .exec()
+    Info.findOneAndDelete({ userId: req.user.id })
       .then(() => {
-        res.status(200).json({
-          message: "Information Delete Successfully",
-          request: {
-            request: {
-              type: "GET",
-              url: "http://localhost:5000/personal/",
-            },
-          },
-        });
+        NewUser.findOneAndDelete({ _id: req.user.id })
+          .then(() => {
+            res.json({ message: "User Deleted" });
+          })
+          .catch((err) => res.status(500).json({ err: err }));
       })
-      .catch((err) => {
-        res.status(500).json({
-          Error: err,
-        });
-      });
+      .catch((err) => res.status(500).json({ err: err }));
   }
 );
 
